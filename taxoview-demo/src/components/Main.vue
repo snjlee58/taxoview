@@ -1,107 +1,104 @@
 <template>
-  <div style="margin: 2rem;">
-    <h1>Sankey Plugin Demo</h1>
+  <div class="ma-3">
+    <v-card height="200" class="w-50"variant="outlined">
+        <v-card-title>Data Input</v-card-title>
 
-    <v-card variant="outlined">
-      <v-tabs
-        v-model="mode"
-        align-tabs="start"
-        color="deep-purple-accent-4"
-      >
-        <v-tab :value="1">Sample Data</v-tab>
-        <v-tab :value="2">File Input</v-tab>
-        <v-tab :value="3">Uniprot ID</v-tab>
-      </v-tabs>
+          <v-tabs
+            v-model="mode"
+            align-tabs="start"
+          >
+            <v-tab :value="1">Sample Data</v-tab>
+            <v-tab :value="2">File Input</v-tab>
+            <!-- <v-tab :value="3">Uniprot ID</v-tab> -->
+          </v-tabs>
+      
+          <v-tabs-window v-model="mode">
+            <!-- Sample -->
+            <v-tabs-window-item :value="1">
+              <v-card-text>
+                <v-select v-model="inputData" :items="[1, 2, 3]" variant="underlined" @update:modelValue="setSampleData">
+                </v-select>
+              </v-card-text>
+            </v-tabs-window-item>
+      
+            <!-- File Input -->
+            <v-tabs-window-item :value="2">
+              <v-card-text>
+                <v-file-input label="Input Kraken report (.tsv)" variant="underlined" accept=".tsv" density="compact" show-size prepend-icon="mdi-upload" v-model="file" @change="readFile(file)">
+                </v-file-input>
+              </v-card-text>
+            </v-tabs-window-item>
+      
+            <!-- Uniprot ID -->
+            <!-- <v-tabs-window-item :value="3">
+              <v-card-text>
+                <v-text-field label="Uniprot ID" v-model="uniprotId"></v-text-field>
+              </v-card-text>
+            </v-tabs-window-item> -->
+          </v-tabs-window>
+      </v-card>
 
-      <v-tabs-window v-model="mode">
-        <!-- Sample -->
-        <v-tabs-window-item :value="1">
-          <v-card-text>
-            <select class="setting-input" id="input-data" v-model="inputData" @change="setSampleData">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-            </select>
-            <label for="input-data">{{ `Input data` }}</label>
-          </v-card-text>
-        </v-tabs-window-item>
-
-        <!-- File Input -->
-        <v-tabs-window-item :value="2">
-          <v-card-text>
-            <v-file-input label="Input Kraken report" accept=".tsv" density="compact" show-size prepend-icon="mdi-upload" v-model="file" @change="readFile(file)">
-            </v-file-input>
-          </v-card-text>
-        </v-tabs-window-item>
-
-        <!-- Uniprot ID -->
-        <v-tabs-window-item :value="3">
-          <v-card-text>
-            <v-text-field label="Uniprot ID" v-model="uniprotId"></v-text-field>
-          </v-card-text>
-        </v-tabs-window-item>
-      </v-tabs-window>
+    <v-card variant="text" class="w-50">
+      <v-card-text>
+          <div class="setting-panel">
+            <input class="setting-input" id="node-padding" type="range" v-model.number="nodePadding" value="13" min="1"
+              max="20" />
+            <label for="node-padding">{{ `Node padding: ${nodePadding}` }}</label>
+          </div>
+          <div class="setting-panel">
+            <input class="setting-input" id="figure-height" type="range" v-model.number="figureHeight" value="700" min="100"
+              max="1500" />
+            <label for="figure-height">{{ `Figure height: ${figureHeight}` }}</label>
+          </div>
+          <div class="setting-panel">
+            <input class="setting-input" id="figure-width" type="range" v-model.number="figureWidth" value="700" min="100"
+              max="1500" />
+            <label for="figure-width">{{ `Figure width: ${figureWidth}` }}</label>
+          </div>
+          <div class="setting-panel">
+            <input class="setting-input" id="taxa-limit" type="range" v-model.number="taxaLimit" value="10" min="1"
+              max="100" />
+            <label for="figure-width">{{ `Taxa limit: ${taxaLimit}` }}</label>
+          </div>
+          <div class="setting-panel">
+            <input class="setting-input" id="show-all" type="checkbox" v-model.number="showAll" />
+            <label for="show-all">{{ `Show full graph` }}</label>
+          </div>
+          <div>
+            <label>Ranks to show: </label>
+            <label v-for="rank in rankOptions" :key="rank">
+              <input type="checkbox" :value="rank" v-model="ranksToShow" />{{ rank }} </label>
+          </div>
+      </v-card-text>
+      <v-card-text class="w-50">
+        <v-text-field v-model="searchQuery" append-inner-icon="mdi-magnify" density="compact" label="Search name or tax ID…" hide-details variant="outlined"></v-text-field>
+      </v-card-text>
     </v-card>
 
-    <div class="settings-panel">
-      <div class="setting-panel">
-        <input class="setting-input" id="node-padding" type="range" v-model.number="nodePadding" value="13" min="1"
-          max="20" />
-        <label for="node-padding">{{ `Node padding: ${nodePadding}` }}</label>
-      </div>
-      <div class="setting-panel">
-        <input class="setting-input" id="figure-height" type="range" v-model.number="figureHeight" value="700" min="100"
-          max="1500" />
-        <label for="figure-height">{{ `Figure height: ${figureHeight}` }}</label>
-      </div>
-      <div class="setting-panel">
-        <input class="setting-input" id="figure-width" type="range" v-model.number="figureWidth" value="700" min="100"
-          max="1500" />
-        <label for="figure-width">{{ `Figure width: ${figureWidth}` }}</label>
-      </div>
-      <div class="setting-panel">
-        <input class="setting-input" id="taxa-limit" type="range" v-model.number="taxaLimit" value="10" min="1"
-          max="100" />
-        <label for="figure-width">{{ `Taxa limit: ${taxaLimit}` }}</label>
-      </div>
-      <div class="setting-panel">
-        <input class="setting-input" id="show-all" type="checkbox" v-model.number="showAll" />
-        <label for="show-all">{{ `Show full graph` }}</label>
-      </div>
-      <div>
-        <label>Ranks to show: </label>
-        <label v-for="rank in rankOptions" :key="rank">
-          <input type="checkbox" :value="rank" v-model="ranksToShow" />{{ rank }}
-        </label>
-      </div>
-      <div class="settings-panel">
-        <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="🔍 Search name or tax ID…"
-        style="width: 200px;"
-      />
-      </div>
-    </div>
+    <v-card variant="text">
+      <v-card-text>
+        <!-- Create TaxoView Component -->
+        <TaxoView :rawData="rawReport" :taxaLimit="taxaLimit" :showAll="showAll" :fontFill="fontFill" :minThresholdMode=0
+          :minThreshold=1 :figureHeight="figureHeight" :figureWidth="figureWidth" :labelOption=1 :nodePadding="nodePadding"
+          :colorScheme="[
+            '#8CB5B5' , // light teal
+            '#785EF0', // purple
+            '#E59579', // salmon
+            '#506432', // dark green
+            '#BC7576', // dark salmon
+            '#6C3400', // light brown
+            '#C14C32', // dark red
+            '#648FFF', // blue
+            '#FFCD73', // yellow
+            '#41222A' , // dark brown
+          ]" 
+          :ranksToShow="ranksToShow"
+          :searchQuery="searchQuery" 
+          />
+      </v-card-text>
+    </v-card>
 
-    <!-- Create TaxoView Component -->
-    <TaxoView :rawData="rawReport" :taxaLimit="taxaLimit" :showAll="showAll" :fontFill="fontFill" :minThresholdMode=0
-      :minThreshold=1 :figureHeight="figureHeight" :figureWidth="figureWidth" :labelOption=1 :nodePadding="nodePadding"
-      :colorScheme="[
-        '#8CB5B5' , // light teal
-        '#785EF0', // purple
-        '#E59579', // salmon
-        '#506432', // dark green
-        '#BC7576', // dark salmon
-        '#6C3400', // light brown
-        '#C14C32', // dark red
-        '#648FFF', // blue
-        '#FFCD73', // yellow
-        '#41222A' , // dark brown
-      ]" 
-      :ranksToShow="ranksToShow"
-      :searchQuery="searchQuery" 
-      />
+
 
   </div>
 </template>
@@ -131,6 +128,23 @@ export default {
       mode: 1, // 1 = sample data, 2 = file input, 3 = uniprot ids
       inputData: 1, // selected sample # in sample data tab (1)
       file: null, // File object from file input tab (2)
+      tabs: [
+        {
+          id: 'sample',  // unique key used by v-model
+          label: 'Sample Data',  
+          render: 'samplePane'  // <component :is> helper (see below)
+        },
+        {
+          id: 'file',
+          label: 'File Input',
+          render: 'filePane'
+        },
+        {
+          id: 'uniprot',
+          label: 'Uniprot ID',
+          render: 'uniprotPane'
+        }
+      ],
       
       // Sample Data Content
       samples: {
