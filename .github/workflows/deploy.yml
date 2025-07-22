@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3. Install deps & build the demo
+      # Install deps & build the demo
       - name: Install dependencies
         run: npm install
         working-directory: taxoview-demo
@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: taxoview-demo/dist
-
+          
           
       - name: Deploy to GitHub Pages
         id: deployment
