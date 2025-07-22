@@ -7,7 +7,7 @@
 # Example project directory
 # Ignore dependencies
 example/node_modules/
-example/package-lock.json
+# example/package-lock.json
 
 # Ignore build outputs
 example/dist/
