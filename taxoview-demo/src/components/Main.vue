@@ -1,6 +1,6 @@
 <template>
   <div class="ma-3">
-    <v-card height="200" class="w-50"variant="outlined">
+    <v-card height="200" class="w-50"variant="text">
         <v-card-title>Data Input</v-card-title>
 
           <v-tabs
@@ -39,6 +39,7 @@
       </v-card>
 
     <v-card variant="text" class="w-50">
+      <v-card-title>Adjust Parameters</v-card-title>
       <v-card-text>
           <div class="setting-panel">
             <input class="setting-input" id="node-padding" type="range" v-model.number="nodePadding" value="13" min="1"
